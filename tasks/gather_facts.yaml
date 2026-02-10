@@ -1,0 +1,13 @@
+---
+- name: Gather Facts from Cisco IOS Devices
+  hosts: routers
+  gather_facts: false
+
+  tasks:
+    - name: Gather facts using ios_facts module
+      cisco.ios.ios_facts:
+      register: ios_facts_result
+
+    - name: Display gathered facts
+      debug:
+        var: ios_facts_result

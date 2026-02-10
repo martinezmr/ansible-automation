@@ -1,0 +1,152 @@
+Building configuration...
+
+Current configuration : 1925 bytes
+!
+! Last configuration change at 21:15:59 EET Fri Feb 6 2026 by cisco
+!
+version 15.5
+service config
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Dallas
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+aaa new-model
+!
+!
+aaa authentication login default local
+!
+!
+!
+!
+!
+aaa session-id common
+!
+!
+!
+bsd-client server url https://cloudsso.cisco.com/as/token.oauth2
+clock timezone EET 2 0
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+!
+!
+!
+!
+no ip domain lookup
+ip domain name ensld.net
+ip cef
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+cts logging verbose
+!
+!
+archive
+ log config
+  logging enable
+  logging size 200
+username cisco privilege 15 password 0 cisco
+!
+redundancy
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 3.3.3.3 255.255.255.255
+!
+interface Ethernet0/0
+ ip address 192.168.72.157 255.255.255.0
+!
+interface Ethernet0/1
+ no ip address
+!
+interface Ethernet0/2
+ no ip address
+!
+interface Ethernet0/3
+ no ip address
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+banner motd ^CC
+#####################################################################
+###########You are now accessing Manny's Lab..............###########
+#####################################################################
+
+If you are the bad guys then FUCK YOU, NO UNAUTHORIZED ACCESS! 
+However if you just so happen to work here, please login. Thank you!"
+
+#####################################################################
+#####################################################################
+#####################################################################
+^C
+!
+line con 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ privilege level 15
+ transport input telnet ssh
+!
+ntp server pnpntpserver.localdomain
+!
+end

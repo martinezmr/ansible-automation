@@ -1,7 +1,0 @@
----
-# Connection and Authentication
-ansible_connection: network_cli
-ansible_user: cisco
-
-# Network OS Configuration
-ansible_network_os: cisco.ios.ios

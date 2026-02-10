@@ -2,7 +2,6 @@
 - name: Running Show Commands on Cisco IOS
   hosts: routers
   gather_facts: no
-  connection: network_cli
 
   tasks:
     - name: Show version

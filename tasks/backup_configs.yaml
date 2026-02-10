@@ -1,0 +1,10 @@
+---
+- name: Backup Cisco IOS Configurations
+  hosts: routers
+  gather_facts: false
+
+  tasks:
+    - name: Backup running configuration
+      ios_config:
+        backup: yes
+      register: backup_result
