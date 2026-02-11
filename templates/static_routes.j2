@@ -1,0 +1,4 @@
+{% for route in static_routes %}
+ip route {{ route.network }} {{ route.netmask }} {{ route.next_hop }}
+{% endfor -%}
+!

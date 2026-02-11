@@ -1,0 +1,21 @@
+{% for interface in interfaces %}
+interface {{ interface.name }}
+ ip address {{ interface.ip }} {{ interface.mask }}
+ no shutdown
+!
+{% endfor %}
+router bgp {{ asn }}
+ bgp router-id {{ loopback0 }}
+ {% for neighbor in bgp_neighbors -%}
+ neighbor {{ neighbor.ip }} remote-as {{ neighbor.asn }}
+ neighbor {{ neighbor.ip }} update-source loopback0
+ neighbor {{ neighbor.ip }} ebgp-multihop 2
+ {% endfor -%}
+ !
+ address-family ipv4 unicast
+  network {{ loopback0 }} mask 255.255.255.255
+  {% for neighbor in bgp_neighbors -%}
+  neighbor {{ neighbor.ip }} activate
+  {% endfor -%}
+ exit-address-family
+!

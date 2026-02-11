@@ -1,0 +1,16 @@
+interfaces:
+  - name: "loopback0"
+    ip: "2.2.2.2"
+    mask: "255.255.255.255"
+  - name: "eth0/1"
+    ip: "12.1.1.2"
+    mask: "255.255.255.0"
+asn: 65002
+loopback0: "2.2.2.2"
+bgp_neighbors:
+  - ip: "1.1.1.1"
+    asn: 65001
+static_routes:
+  - network: "1.1.1.1"
+    netmask: "255.255.255.255"
+    next_hop: "12.1.1.1"

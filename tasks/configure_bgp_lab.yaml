@@ -1,0 +1,21 @@
+---
+- name: Configure BGP Lab
+  hosts: routers
+  gather_facts: false
+  connection: network_cli
+  
+  tasks:
+    - name: Get Device Configuration Template
+      ansible.builtin.template:
+        src: /home/manny/github-repos/ansible-automation/templates/device_config.j2
+        dest: /home/manny/github-repos/ansible-automation/tmp/device_config_{{ inventory_hostname }}.cfg
+    
+    - name: Apply Device Configuration to Device
+      ios_config:
+        src: /home/manny/github-repos/ansible-automation/tmp/device_config_{{ inventory_hostname }}.cfg
+        backup: yes
+      register: config_result
+
+    - name: Display Configuration Result
+      debug:
+        var: config_result.updates
