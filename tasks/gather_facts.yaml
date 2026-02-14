@@ -5,7 +5,8 @@
 
   tasks:
     - name: Gather facts using ios_facts module
-      cisco.ios.ios_facts:
+      ios_facts:
+        gather_subset: all
       register: ios_facts_result
 
     - name: Display gathered facts
