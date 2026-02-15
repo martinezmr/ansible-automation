@@ -1,0 +1,50 @@
+---
+# The docs: https://docs.ansible.com/projects/ansible/latest/collections/cisco/dnac/configuration_template_info_module.html
+# Run: ansible-playbook get_dnac_templates.yaml -e "project={{ project name here }}"
+- name: Get Cisco DNA Center Templates Details
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Set Default Variables if none Provided
+      set_fact:
+        project: "{{ project | default('Cloud DayN Templates', true) }}"
+        dnac_user: "{{ dnac_user | default('devnetuser', true) }}"
+        dnac_pass: "{{ dnac_pass | default('Cisco123!', true) }}"
+        dnac_host: "{{ dnac_host | default('sandboxdnac.cisco.com', true) }}"
+        dnac_verify: false
+
+    - name: Get Template IDs from DNAC
+      cisco.dnac.templates_details_info:
+        dnac_username: "{{ dnac_user }}"
+        dnac_password: "{{ dnac_pass }}"
+        dnac_host: "{{ dnac_host }}"
+        dnac_verify: "{{ dnac_verify }}"
+      register: template_details
+      no_log: true
+
+    - name: Filter Templates for Desired Project
+      set_fact:
+        dnac_templates: "{{ dnac_templates | default([]) + [{'name': item.name | replace(' ', '_'), 'id': item.id, 'project': item.projectName}] }}"
+      loop: "{{ template_details.dnac_response.response }}"
+      when: item.projectName == project
+      no_log: true
+
+    - name: Get Template Content from DNAC
+      cisco.dnac.configuration_template_info:
+        dnac_username: "{{ dnac_user }}"
+        dnac_password: "{{ dnac_pass }}"
+        dnac_host: "{{ dnac_host }}"
+        dnac_verify: "{{ dnac_verify }}"
+        templateId: "{{ item.id }}"
+      loop: "{{ dnac_templates }}"
+      register: template_content
+      no_log: true
+
+    - name: Save Template Content to Templates Directory
+      copy:
+        content: "{{ item.dnac_response.templateContent }}"
+        dest: "../templates/{{ item.dnac_response.name | replace(' ', '_') }}.j2"
+      loop: "{{ template_content.results }}"
+      no_log: true
