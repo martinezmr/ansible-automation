@@ -1,0 +1,34 @@
+---
+- name: Show Management IP Address to Configure Hosts File
+  hosts: telnet_devices
+  gather_facts: false
+
+  tasks:
+    - name: Get Management IP Address Raw Output
+      telnet:
+        host: "{{ ansible_host }}"
+        port: "{{ ansible_port }}"
+        user: "{{ ansible_user }}"
+        password: "{{ ansible_password }}"
+        login_prompt: "Username: "
+        prompts:
+          - "[a-zA-Z0-9_-]+(\\([^)]+\\))?[>#]"
+        command:
+          - ""
+          - "enable"
+          - "show ip interface brief  | include Ethernet0/0"
+      register: mgmt_ip_address_output
+
+    - name: Clean Output
+      set_fact:
+        clean_output: "{{ mgmt_ip_address_output.stdout | regex_replace('\\x1b[^m]*[mK]|\\x1b\\]0;.*\\x07', '') }}"
+
+    - name: Extract Management IP Address
+      set_fact:
+        mgmt_ip_address: "{{ clean_output.split('\r\n')[-2] | regex_search('Ethernet0/0\\s+(\\S+)\\s+', '\\1') }}"
+      ignore_errors: true
+
+    - name: Display Management IP Address
+      debug:
+        msg: "{{ inventory_hostname }} ansible_host={{ mgmt_ip_address[0] }}"
+      ignore_errors: true

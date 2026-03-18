@@ -1,0 +1,47 @@
+---
+- name: Configure Baseline Using Telnet
+  hosts: telnet_devices
+  gather_facts: false
+
+  tasks:
+    - name: Set Hostname Variable
+      set_fact:
+        hostname: "{{ inventory_hostname }}"
+
+    - name: Get Device Configuration Template
+      template:
+        src: ../templates/baseline.j2
+        dest: /home/$USER/github-repos/ansible-automation/tmp/baseline_{{ inventory_hostname }}.cfg
+
+    # - name: Bypass Initial Configuration Dialog
+    #   telnet:
+    #     host: "{{ ansible_host }}"
+    #     port: "{{ ansible_port }}"
+    #     user: ""
+    #     password: ""
+    #     login_prompt: "."
+    #     prompts:
+    #       - "initial configuration dialog\\? \\[yes/no\\]:"
+    #       - "[a-zA-Z0-9_-]+[>#]"
+    #     command:
+    #       - ""
+    #       - "no"
+    #       - ""
+    #   ignore_errors: true
+
+    - name: Apply Baseline Configuration to Device
+      telnet:
+        host: "{{ ansible_host }}"
+        port: "{{ ansible_port }}"
+        user: ""
+        password: ""
+        login_prompt: "."
+        prompts:
+          - "[a-zA-Z0-9_-]+(\\([^)]+\\))?[>#]"
+        command: "{{ lookup('file', '/home/manny/github-repos/ansible-automation/tmp/baseline_' + inventory_hostname + '.cfg').splitlines() }}"
+      register: telnet_output
+
+    - name: Clean Up Temporary Configuration File
+      file:
+        path: "/home/manny/github-repos/ansible-automation/tmp/baseline_{{ inventory_hostname }}.cfg"
+        state: absent

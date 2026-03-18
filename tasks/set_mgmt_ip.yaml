@@ -1,0 +1,13 @@
+---
+- name: Set Static Management IP Address on Devices
+  hosts: ssh_devices
+  gather_facts: false
+
+  tasks:
+    - name: Set Management IP Address
+      ios_config:
+        commands:
+          - "interface Ethernet0/0"
+          - "no switchport"
+          - "ip address {{ ansible_host }} 255.255.255.0"
+        save_when: modified
