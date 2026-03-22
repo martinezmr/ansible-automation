@@ -13,21 +13,22 @@
         src: ../templates/baseline.j2
         dest: /home/$USER/github-repos/ansible-automation/tmp/baseline_{{ inventory_hostname }}.cfg
 
-    # - name: Bypass Initial Configuration Dialog
-    #   telnet:
-    #     host: "{{ ansible_host }}"
-    #     port: "{{ ansible_port }}"
-    #     user: ""
-    #     password: ""
-    #     login_prompt: "."
-    #     prompts:
-    #       - "initial configuration dialog\\? \\[yes/no\\]:"
-    #       - "[a-zA-Z0-9_-]+[>#]"
-    #     command:
-    #       - ""
-    #       - "no"
-    #       - ""
-    #   ignore_errors: true
+    - name: Bypass Initial Configuration Dialog
+      telnet:
+        host: "{{ ansible_host }}"
+        port: "{{ ansible_port }}"
+        user: ""
+        password: ""
+        login_prompt: "."
+        prompts:
+          - "initial configuration dialog\\? \\[yes/no\\]:"
+          - "[a-zA-Z0-9_-]+[>#]"
+        command:
+          - ""
+          - "no"
+          - ""
+      ignore_errors: true
+      tags: ["initial_config"]
 
     - name: Apply Baseline Configuration to Device
       telnet:

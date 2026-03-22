@@ -1,0 +1,52 @@
+---
+- name: Configure Nginx Web Server
+  hosts: staging
+  become: true
+
+  tasks:
+  - name: Install Nginx
+    ansible.builtin.package:
+      name: nginx
+      state: present
+
+  - name: Install Firewalld
+    ansible.builtin.package:
+      name: firewalld
+      state: present
+
+  - name: Copy nginx config file
+    ansible.builtin.copy:
+      src: ../templates/nginx.conf
+      dest: /etc/nginx/nginx.conf
+
+  - name: Copy index.html to server
+    ansible.builtin.copy:
+      src: ../templates/index.html
+      dest: /usr/share/nginx/html/index.html
+      mode: '0664'
+    tags: [ 'deploy' ]
+
+  - name: Restart Nginx
+    ansible.builtin.service:
+      name: nginx
+      state: restarted
+    tags: [ 'deploy' ]
+
+  - name: Check status 200 and fail if incorrect page contents
+    ansible.builtin.uri:
+      url: http://localhost/index.html
+      return_content: yes
+    register: response
+    tags: [ 'deploy' ]
+
+  - name: Print result
+    ansible.builtin.debug:
+      var: response.content
+    tags: [ 'deploy', 'test' ]
+
+  - name: Permit traffic in default zone for http service
+    ansible.posix.firewalld:
+      service: http
+      permanent: true
+      immediate: true
+      state: enabled

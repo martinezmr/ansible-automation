@@ -1,0 +1,44 @@
+---
+- name: Web Servers
+  hosts: staging
+  become: true
+  remote_user: root 1
+  vars: 2
+    username: Ada
+    password: Alexandra
+  collections:
+    - community.mongodb
+  roles: 3
+    - role: geerlingguy.java
+      java_packages:
+        - java-1.8.0-openjdk
+  handlers: 4
+    - name: restart web service
+      ansible.builtin.service:
+        name: httpd
+        state: restarted
+  tasks: 5
+    - name: Ensure apache is at the latest version
+      ansible.builtin.yum:
+        name: httpd
+        state: latest
+      tags: ['installing'] 6
+      register: command_output 7
+    - name: Print to console
+      ansible.builtin.debug: 8
+        msg: >
+  '{{command_output.stdout}}' Remember user: '{{username}}'
+  and password: '{{password}}'
+    - name: template configuration file
+      ansible.builtin.template: 9
+        src: httpd.j2.conf
+        dest: /etc/httpd.conf
+    - name: restart everything
+      ansible.builtin.command: echo "this task will restart the web services"
+      notify: "restart web services" 10
+    - name: Create 'books' database user with name 'alex' and password 'alex'.
+      mongodb_user: 11
+        database: books
+        name: alex
+        password: alex
+        state: present
