@@ -1,0 +1,14 @@
+---
+- name: CONFIGURE ARISTA EOS DEVICES
+  hosts: eos
+  gather_facts: false
+
+  tasks:
+  - name: Configure interfaces on Arista EOS devices
+    arista.eos.eos_config:
+      config: "{{ lookup('template', 'main.j2') }}"
+    register: config_result
+
+  - name: Display configuration result
+    debug:
+      var: config_result

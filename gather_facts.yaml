@@ -1,43 +1,14 @@
-- name: Gather Ansible Facts
-  hosts: all
-  vars_files:
-  - ./templates/external_vars.yaml
+---
+- name: Gather Facts from Arista EOS Devices
+  hosts: eos
+  gather_facts: false
 
   tasks:
-  - name: Print all available facts
-    debug:
-      var: ansible_facts['os_family']
+  - name: Gather facts using eos_facts module
+    arista.eos.eos_facts:
+      gather_subset: all
+    register: eos_facts_result
 
-  - name: Echo Host Var
+  - name: Display gathered facts
     debug:
-      msg: "{{ msg_name }}!"
-
-  - name: Echo External Var
-    debug:
-      msg: "{{ second_msg }}!"
-
-  - name: Echo Group Var
-    debug:
-      msg: "{{ group_var }}!"
-
-  - name: Echo vault user and pass
-    debug:
-      msg: "Vault user is {{ username }} and vault pass is {{ password }}!"
-    tags: vault
-
-  - name: Create a dictionary
-    set_fact:
-      my_dict:
-        key1: value1
-        key2: value2
-        key3: value3
-
-  - name: Loop through dictionary
-    debug:
-      msg: "The value of {{ item.key }} is {{ item.value }}"
-    loop: "{{ my_dict | dict2items }}"
-    register: response
-
-  - name: Print the response
-    debug:
-      var: response
+      var: eos_facts_result

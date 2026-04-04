@@ -1,0 +1,8 @@
+---
+loopback0:
+  ip: 2.2.2.2
+  mask: 32
+
+eth1:
+  ip: 10.0.0.2
+  mask: 30

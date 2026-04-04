@@ -1,0 +1,10 @@
+!
+ip routing
+!
+interface Loopback0
+ip address {{ loopback0.ip }}/{{ loopback0.mask }}
+no shutdown
+!
+interface Ethernet1
+ip address {{ eth1.ip }}/{{ eth1.mask }}
+no shutdown
